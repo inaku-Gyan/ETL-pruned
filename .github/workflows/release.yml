@@ -59,6 +59,8 @@ jobs:
 
       - name: Construct the release
         run: |
+          #  (+) 此处使用 `*`，将不会匹配 `.` 开头的隐藏文件和目录
+          #      目前（20.47.1）有且只有 `./include/etl/.vscode` 目录，被排除符合预期。
           mv ${{ env.SrcCodeDir }}/include/etl/* ${{ env.ReleaseDir }}/
           mv ${{ env.SrcCodeDir }}/LICENSE ${{ env.ReleaseDir }}/
           mv ${{ env.SrcCodeDir }}/README.md ${{ env.ReleaseDir }}/
