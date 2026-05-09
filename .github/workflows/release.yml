@@ -13,7 +13,7 @@ env:
   ReleaseDir: release
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   release:
