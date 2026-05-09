@@ -17,6 +17,31 @@ This repository keeps a `release` branch that contains only:
 
 This makes the branch lightweight and stable for direct submodule integration.
 
+## Usage
+
+### Initialization
+
+Add the `release` branch as submodule in your business repository:
+
+```bash
+git submodule add -b release https://github.com/inaku-Gyan/ETL-pruned.git third_party/etl
+git submodule update --init --recursive
+```
+
+### Update to the latest published release
+
+```bash
+# Update the Submodule
+cd third_party/etl
+git fetch
+git checkout release       # Checkout the latest version.
+
+# Commit in your main repo
+cd ../..
+git add .
+git commit -m "chore: update ETL submodule"
+```
+
 ## How releases are produced
 
 GitHub Actions workflow: `.github/workflows/release.yml`
@@ -34,27 +59,6 @@ the workflow will:
 4. Clean old files from `release`.
 5. Copy pruned release files into `release`.
 6. Commit and push to `release`.
-
-## Use as a Git submodule
-
-Add the `release` branch as submodule in your business repository:
-
-```bash
-git submodule add -b release https://github.com/inaku-Gyan/ETL-pruned.git third_party/etl
-git submodule update --init --recursive
-```
-
-### Update to the latest published release
-
-```bash
-cd third_party/etl
-git fetch origin
-git checkout release
-git pull origin release
-cd ../..
-git add third_party/etl .gitmodules
-git commit -m "chore: update ETL submodule"
-```
 
 ## Notes
 
