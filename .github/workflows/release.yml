@@ -12,6 +12,9 @@ env:
   SrcCodeDir: original
   ReleaseDir: release
 
+permissions:
+  contents: read
+
 jobs:
   release:
     runs-on: ubuntu-latest
