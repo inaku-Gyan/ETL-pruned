@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "The tag to release from"
+        description: "The tag (X.Y.Z) to release from"
         required: true
       commit_message:
         description: "Additional commit message for the release commit (optional)"
