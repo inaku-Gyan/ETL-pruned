@@ -1,0 +1,61 @@
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag to release from"
+        required: true
+
+env:
+  OriginalRepo: ETLCPP/etl.git
+  ReleaseBranch: release
+
+  SrcCodeDir: original
+  ReleaseDir: release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the tag
+        run: |
+          if [[ ! ${{ github.event.inputs.tag }} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: It must be a tag in the format X.Y.Z"
+            exit 1
+          fi
+
+      - name: Checkout the original repo
+        uses: actions/checkout@v6
+        with:
+          path: ${{ env.SrcCodeDir }}
+          repository: ${{ env.OriginalRepo }}
+          ref: ${{ github.event.inputs.tag }}
+          sparse-checkout: |
+            include/
+
+      - name: Checkout the release repo
+        uses: actions/checkout@v6
+        with:
+          path: ${{ env.ReleaseDir }}
+          ref: ${{ env.ReleaseBranch }}
+
+      - name: Clean the release repo
+        run: |
+          mv ${{ env.ReleaseDir }}/.git ./ReleaseGitBackup
+          rm -rf ${{ env.ReleaseDir }}/*
+          mv ./ReleaseGitBackup ${{ env.ReleaseDir }}/.git
+          ls -a ${{ env.ReleaseDir }}
+
+      - name: Construct the release
+        run: |
+          cp -r ${{ env.SrcCodeDir }}/include/* ${{ env.ReleaseDir }}/
+          ls -a ${{ env.ReleaseDir }}
+
+      - name: Release
+        working-directory: ${{ env.ReleaseDir }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "Release ${{ github.event.inputs.tag }}"
+          git push origin ${{ env.ReleaseBranch }}
