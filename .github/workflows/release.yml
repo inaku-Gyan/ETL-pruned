@@ -33,7 +33,11 @@ jobs:
           repository: ${{ env.OriginalRepo }}
           ref: ${{ github.event.inputs.tag }}
           sparse-checkout: |
-            include/
+            include/etl/
+            LICENSE
+            README.md
+            version.txt
+          sparse-checkout-cone-mode: false  # Disable cone mode to allow for checking out single files
 
       - name: Checkout the release repo
         uses: actions/checkout@v6
@@ -46,12 +50,19 @@ jobs:
           mv ${{ env.ReleaseDir }}/.git ./ReleaseGitBackup
           rm -rf ${{ env.ReleaseDir }}/*
           mv ./ReleaseGitBackup ${{ env.ReleaseDir }}/.git
-          ls -a ${{ env.ReleaseDir }}
+
+          echo "Cleaned the release directory. The release directory now contains:"
+          ls -A ${{ env.ReleaseDir }}
 
       - name: Construct the release
         run: |
-          cp -r ${{ env.SrcCodeDir }}/include/* ${{ env.ReleaseDir }}/
-          ls -a ${{ env.ReleaseDir }}
+          mv ${{ env.SrcCodeDir }}/include/etl/* ${{ env.ReleaseDir }}/
+          mv ${{ env.SrcCodeDir }}/LICENSE ${{ env.ReleaseDir }}/
+          mv ${{ env.SrcCodeDir }}/README.md ${{ env.ReleaseDir }}/
+          mv ${{ env.SrcCodeDir }}/version.txt ${{ env.ReleaseDir }}/
+
+          echo "Finished constructing the release. The release directory now contains:"
+          ls -A ${{ env.ReleaseDir }}
 
       - name: Release
         working-directory: ${{ env.ReleaseDir }}
